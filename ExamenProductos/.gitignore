@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+.DS_Store
+*.apk
+*.aab
+*.ipa
+*.log

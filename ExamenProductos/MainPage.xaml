@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:ExamenProductos.Models"
+             x:Class="ExamenProductos.MainPage"
+             Title="Catálogo de Productos"
+             BackgroundColor="{StaticResource Fondo}">
+
+    <!-- ====== PALETA: cambia solo estos valores y toda la app cambia ====== -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Fondo">#12141A</Color>
+            <Color x:Key="Superficie">#1C2029</Color>
+            <Color x:Key="Borde">#2C323E</Color>
+            <Color x:Key="Texto">#ECEFF4</Color>
+            <Color x:Key="TextoSuave">#98A2B3</Color>
+            <Color x:Key="Acento">#6C8FFF</Color>
+            <Color x:Key="Exito">#2FBF71</Color>
+            <Color x:Key="Peligro">#E5484D</Color>
+            <Color x:Key="Neutro">#39404E</Color>
+
+            <!-- Estilo común para todos los botones -->
+            <Style TargetType="Button">
+                <Setter Property="TextColor" Value="{StaticResource Texto}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="HeightRequest" Value="46" />
+                <Setter Property="Padding" Value="18,0" />
+            </Style>
+
+            <!-- Estilo común para las cajas de captura -->
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="{StaticResource Texto}" />
+                <Setter Property="PlaceholderColor" Value="#5B6472" />
+                <Setter Property="BackgroundColor" Value="#151920" />
+            </Style>
+            <Style TargetType="Editor">
+                <Setter Property="TextColor" Value="{StaticResource Texto}" />
+                <Setter Property="PlaceholderColor" Value="#5B6472" />
+                <Setter Property="BackgroundColor" Value="#151920" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="14" RowSpacing="12">
+
+        <!-- ENCABEZADO -->
+        <VerticalStackLayout Grid.Row="0" Spacing="2">
+            <Label Text="Catálogo de Productos"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Texto}" />
+            <Label x:Name="lblContador"
+                   Text="0 productos registrados"
+                   FontSize="13"
+                   TextColor="{StaticResource TextoSuave}" />
+        </VerticalStackLayout>
+
+        <!-- LISTA DE PRODUCTOS -->
+        <Border Grid.Row="1"
+                Stroke="{StaticResource Borde}"
+                StrokeThickness="1"
+                BackgroundColor="{StaticResource Superficie}"
+                Padding="6">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="14" />
+            </Border.StrokeShape>
+
+            <CollectionView x:Name="listaProductos"
+                            SelectionMode="Single"
+                            SelectionChanged="listaProductos_SelectionChanged">
+
+                <CollectionView.EmptyView>
+                    <Label Text="No hay productos registrados.&#10;Presiona NUEVO para capturar el primero."
+                           HorizontalTextAlignment="Center"
+                           VerticalOptions="Center"
+                           Margin="20"
+                           TextColor="{StaticResource TextoSuave}" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Producto">
+
+                        <!-- Tarjeta de cada producto -->
+                        <Border Margin="4"
+                                Padding="10"
+                                BackgroundColor="#232833"
+                                Stroke="Transparent">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+
+                            <Grid ColumnDefinitions="72,*" ColumnSpacing="12">
+
+                                <Border Grid.Column="0"
+                                        HeightRequest="72"
+                                        WidthRequest="72"
+                                        BackgroundColor="#2C323E"
+                                        Stroke="Transparent">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <Image Source="{Binding UrlProducto}" Aspect="AspectFill" />
+                                </Border>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                    <Label Text="{Binding Nombre}"
+                                           FontSize="17"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource Texto}" />
+                                    <Label Text="{Binding Descripcion}"
+                                           FontSize="13"
+                                           TextColor="{StaticResource TextoSuave}"
+                                           MaxLines="2"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding Resumen}"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource Exito}" />
+                                </VerticalStackLayout>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Border>
+
+        <!-- BOTONES PRINCIPALES -->
+        <HorizontalStackLayout Grid.Row="2" Spacing="10" HorizontalOptions="Center">
+            <Button x:Name="btnNuevo"
+                    Text="NUEVO"
+                    Clicked="btnNuevo_Clicked"
+                    BackgroundColor="{StaticResource Acento}"
+                    TextColor="#0B0E14"
+                    WidthRequest="140" />
+            <Button x:Name="btnVerJson"
+                    Text="VER JSON"
+                    Clicked="btnVerJson_Clicked"
+                    BackgroundColor="Transparent"
+                    BorderColor="{StaticResource Borde}"
+                    BorderWidth="1"
+                    TextColor="{StaticResource TextoSuave}"
+                    WidthRequest="140" />
+        </HorizontalStackLayout>
+
+        <!-- PANEL DE CAPTURA / DETALLE -->
+        <Grid x:Name="panelFormulario"
+              Grid.RowSpan="3"
+              IsVisible="False"
+              BackgroundColor="#D9070910">
+
+            <Border BackgroundColor="{StaticResource Superficie}"
+                    Margin="14"
+                    Padding="18"
+                    VerticalOptions="Center"
+                    MaximumHeightRequest="640"
+                    Stroke="{StaticResource Borde}"
+                    StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
+
+                <ScrollView>
+                    <VerticalStackLayout Spacing="6">
+
+                        <Label x:Name="lblTituloForm"
+                               Text="Nuevo producto"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Texto}"
+                               Margin="0,0,0,6" />
+
+                        <Label Text="NOMBRE DEL PRODUCTO" FontSize="11" TextColor="{StaticResource TextoSuave}" />
+                        <Entry x:Name="txtNombre" Placeholder="Ej. Laptop HP" />
+
+                        <Label Text="DESCRIPCIÓN" FontSize="11" TextColor="{StaticResource TextoSuave}" Margin="0,6,0,0" />
+                        <Editor x:Name="txtDescripcion"
+                                Placeholder="Características del producto"
+                                HeightRequest="80" />
+
+                        <Label Text="CANTIDAD DISPONIBLE" FontSize="11" TextColor="{StaticResource TextoSuave}" Margin="0,6,0,0" />
+                        <Entry x:Name="txtCantidad" Keyboard="Numeric" Placeholder="0" />
+
+                        <Label Text="PRECIO DE COSTO" FontSize="11" TextColor="{StaticResource TextoSuave}" Margin="0,6,0,0" />
+                        <Entry x:Name="txtCosto" Keyboard="Numeric" Placeholder="0.00" />
+
+                        <Label Text="PRECIO DE VENTA" FontSize="11" TextColor="{StaticResource TextoSuave}" Margin="0,6,0,0" />
+                        <Entry x:Name="txtVenta" Keyboard="Numeric" Placeholder="0.00" />
+
+                        <Label Text="URL DEL PRODUCTO (IMAGEN)" FontSize="11" TextColor="{StaticResource TextoSuave}" Margin="0,6,0,0" />
+                        <Entry x:Name="txtUrl"
+                               Keyboard="Url"
+                               Placeholder="https://..."
+                               TextChanged="txtUrl_TextChanged" />
+
+                        <Border HeightRequest="120"
+                                Margin="0,10,0,0"
+                                BackgroundColor="#151920"
+                                Stroke="Transparent">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <Image x:Name="imgVistaPrevia" Aspect="AspectFit" />
+                        </Border>
+
+                        <HorizontalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,14,0,0">
+                            <Button x:Name="btnGuardar"
+                                    Text="GUARDAR"
+                                    Clicked="btnGuardar_Clicked"
+                                    BackgroundColor="{StaticResource Exito}"
+                                    TextColor="#07140D" />
+                            <Button x:Name="btnEliminar"
+                                    Text="ELIMINAR"
+                                    Clicked="btnEliminar_Clicked"
+                                    BackgroundColor="{StaticResource Peligro}" />
+                            <Button x:Name="btnCancelar"
+                                    Text="CANCELAR"
+                                    Clicked="btnCancelar_Clicked"
+                                    BackgroundColor="{StaticResource Neutro}" />
+                        </HorizontalStackLayout>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>
